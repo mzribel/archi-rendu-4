@@ -1,5 +1,5 @@
-export interface ICredentialAuthProvider {
-  registerWithPassword(input: { email: string; password: string }): Promise<{ externalUserId: string; email?: string }>;
-  loginWithPassword(input: { email: string; password: string }): Promise<{ externalUserId: string; email?: string }>;
-  deleteUser(authId:string);
+export abstract class ICredentialAuthProvider {
+  abstract registerWithPassword(input: { email: string; password: string }): Promise<{ externalUserId: string; email?: string }>;
+  abstract loginWithPassword(input: { email: string; password: string }): Promise<{ externalUserId: string; email?: string }>;
+  abstract deleteUser(authId:string);
 }

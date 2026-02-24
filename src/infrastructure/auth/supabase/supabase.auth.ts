@@ -7,6 +7,7 @@ import { BadRequestException, ConflictException, HttpException, UnauthorizedExce
 export class SupabaseAuth implements ICredentialAuthProvider {
   private readonly client: SupabaseClient;
   private readonly adminClient:SupabaseClient;
+
   constructor(params?: {
     supabaseUrl?: string;
     supabaseAnonKey?: string;

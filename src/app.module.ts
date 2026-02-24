@@ -1,14 +1,16 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { TemplateModule } from '@modules/template/template.module';
 import { AuthModule } from '@modules/auth/auth.module';
-import { PrismaModule } from './infrastructure/database/prisma/prisma.module';
+import { PrismaModule } from '@infrastructure/database/prisma/prisma.module';
 import { APP_GUARD } from '@nestjs/core';
-import { RolesGuard } from './modules/auth/guards/roles.guard';
-import { UserModule } from './modules/user/user.module';
-import { SupabaseAuthGuard } from './modules/auth/guards/supabase-auth.guard';
-import { AccountModule } from './modules/account/account.module';
-import { TestModule } from './modules/test/test.module';
+import { SupabaseAuthGuard } from '@modules/auth/guards/supabase-auth.guard';
+import { RolesGuard } from '@modules/auth/guards/roles.guard';
+import { UserModule } from '@modules/users/user.module';
+import { AccountModule } from '@modules/account/account.module';
+import { ApplicationModule } from '@modules/applications/application.module';
+import { CompanyModule } from '@modules/companies/company.module';
+import { OfferModule } from '@modules/offers/offer.module';
+import { StudentModule } from '@modules/students/student.module';
 
 @Module({
   imports: [
@@ -17,10 +19,13 @@ import { TestModule } from './modules/test/test.module';
       envFilePath: '.env',
     }),
     PrismaModule,
-    AuthModule,
-    UserModule,
     AccountModule,
-    TestModule,
+    ApplicationModule,
+    AuthModule,
+    CompanyModule,
+    OfferModule,
+    StudentModule,
+    UserModule
   ],
   providers: [
     { provide: APP_GUARD, useClass: SupabaseAuthGuard },

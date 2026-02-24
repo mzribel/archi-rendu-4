@@ -1,6 +1,5 @@
 import { IS_PUBLIC_KEY } from "@/common/decorators/roles.decorator";
-import { User } from "@/modules/user/models/user";
-import { PrismaUserRepository } from "@/modules/user/repositories/prisma.user.repository";
+import { User } from "@/modules/users/models/user";
 import {
   CanActivate,
   ExecutionContext,
@@ -13,6 +12,7 @@ import {
 import { Reflector } from "@nestjs/core";
 import { SupabaseClient, User as SupabaseUser, createClient } from "@supabase/supabase-js";
 import { Request } from "express";
+import { IUserUseCase } from '@modules/users/usecases/i.user.usecase';
 
 type RequestWithUser = Request & { user?: User };
 
@@ -23,7 +23,7 @@ export class SupabaseAuthGuard implements CanActivate {
 
   constructor(
     private readonly reflector: Reflector,
-    private readonly userRepository: PrismaUserRepository,
+    private readonly userService: IUserUseCase,
     @Optional() @Inject("SUPABASE_CLIENT") client?: SupabaseClient
 
   ) {
@@ -51,7 +51,7 @@ export class SupabaseAuthGuard implements CanActivate {
     const request = context.switchToHttp().getRequest<RequestWithUser>();
     const supabaseUser = await this.authenticateRequest(request);
 
-    const user = await this.userRepository.findBySupabaseId(supabaseUser.id);
+    const user = await this.userService.getBySupabaseUserId(supabaseUser.id);
 
     if (!user) {
       throw new UnauthorizedException("User not found in application DB");

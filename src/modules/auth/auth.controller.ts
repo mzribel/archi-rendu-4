@@ -1,14 +1,19 @@
-import { Body, Controller, Post } from '@nestjs/common';
-import { AuthService } from '@modules/auth/auth.service';
+import { Body, Controller, Get, NotImplementedException, Post, Query } from '@nestjs/common';
 import { Public } from '@/common/decorators/roles.decorator';
+import { IAuthUseCase } from '@modules/auth/usecases/i.auth.usecase';
 
 @Public()
 @Controller("auth")
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(private readonly authService: IAuthUseCase) {}
 
   @Post("login")
   login(@Body() dto: {email:string;password:string}) {
-    return this.authService.login(dto.email, dto.password)
+    return this.authService.loginWithPassword(dto.email, dto.password)
+  }
+
+  @Get("reset_password")
+  reset_password(@Query() email:string) {
+    throw new NotImplementedException();
   }
 }

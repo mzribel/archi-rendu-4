@@ -1,6 +1,6 @@
 import { createParamDecorator, ExecutionContext, UnauthorizedException } from "@nestjs/common";
 import type { Request } from "express";
-import type { User } from "@/modules/user/models/user";
+import type { User } from "@/modules/users/models/user";
 
 type RequestWithUser = Request & {user?:User};
 

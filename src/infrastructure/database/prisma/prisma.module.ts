@@ -13,6 +13,5 @@ import { PrismaTransactionRunner } from './prisma.transaction-runner';
   exports: [
     PrismaDbContext,
     PrismaTransactionRunner],
-    
 })
 export class PrismaModule {}

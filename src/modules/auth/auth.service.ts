@@ -1,22 +1,26 @@
-import { Inject, Injectable } from "@nestjs/common";
-import { CREDENTIAL_AUTH_PROVIDER } from '@infrastructure/auth/auth.providers.module';
-import * as iCredentialAuthProvider from '@/modules/auth/interfaces/i.credential.auth.provider';
+import { Inject, Injectable, NotImplementedException } from '@nestjs/common';
+import { IAuthUseCase } from '@modules/auth/usecases/i.auth.usecase';
+import { ICredentialAuthProvider } from '@modules/auth/interfaces/i.credential.auth.provider';
 
 @Injectable()
-export class AuthService {
+export class AuthService implements IAuthUseCase {
   constructor(
-    @Inject(CREDENTIAL_AUTH_PROVIDER)
-    private readonly credentialAuth: iCredentialAuthProvider.ICredentialAuthProvider) {}
+    private readonly credentialAuth: ICredentialAuthProvider,
+  ) {}
 
-    async register(email:string, password:string) {
-        return this.credentialAuth.registerWithPassword({ email, password });
-    }
+  requestPasswordReset(email: string) {
+    throw new NotImplementedException('Method not implemented.');
+  }
 
-    async login(email: string, password: string) {
-      return await this.credentialAuth.loginWithPassword({ email, password });
-    }
+  async registerWithPassword(email: string, password: string) {
+    return this.credentialAuth.registerWithPassword({ email, password });
+  }
 
-    async deleteUser(authId:string) {
-      return this.credentialAuth.deleteUser(authId);
-    }
+  async loginWithPassword(email: string, password: string) {
+    return await this.credentialAuth.loginWithPassword({ email, password });
+  }
+
+  async deleteUser(authId: string) {
+    return this.credentialAuth.deleteUser(authId);
+  }
 }

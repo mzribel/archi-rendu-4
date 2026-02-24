@@ -1,13 +1,7 @@
-import { Module } from "@nestjs/common";
-import { CompanyProfileService } from "./company.service";
-import { PrismaCompanyProfileRepository } from "./repositories/prisma.company-profile.repository";
+import { Controller } from '@nestjs/common';
+import { ICompanyUseCase } from '@modules/companies/usecases/i.company.usecase';
 
-@Module({
-    providers:[
-        CompanyProfileService,
-        PrismaCompanyProfileRepository,
-        { provide: 'ICompanyProfileRepository', useExisting: PrismaCompanyProfileRepository}
-    ],
-    exports: [CompanyProfileService]
-})
-export class CompanyModule {}
+@Controller()
+export class CompanyController {
+  constructor(private readonly companyService: ICompanyUseCase) {}
+}

@@ -2,22 +2,26 @@ import { Module } from '@nestjs/common';
 import { AuthProvidersModule } from '@infrastructure/auth/auth.providers.module';
 import { AuthController } from '@modules/auth/auth.controller';
 import { AuthService } from '@modules/auth/auth.service';
-import { UserModule } from '../user/user.module';
+import { UserModule } from '../users/user.module';
 import { RolesGuard } from '@/modules/auth/guards/roles.guard';
 import { SupabaseAuthGuard } from '@/modules/auth/guards/supabase-auth.guard';
+import { IAuthUseCase } from '@modules/auth/usecases/i.auth.usecase';
 
 @Module({
   imports: [AuthProvidersModule, UserModule],
   controllers: [AuthController],
   providers: [
-    AuthService,
+    {
+      provide: IAuthUseCase,
+      useClass: AuthService,
+    },
     RolesGuard,
     SupabaseAuthGuard
   ],
   exports: [
-    AuthService, 
-    RolesGuard, 
-    SupabaseAuthGuard
+    RolesGuard,
+    SupabaseAuthGuard,
+    IAuthUseCase
   ]
 })
 export class AuthModule {}

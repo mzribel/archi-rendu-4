@@ -1,14 +1,14 @@
 import { Injectable, CanActivate, ExecutionContext, ForbiddenException } from "@nestjs/common";
 import { Reflector } from "@nestjs/core";
-import { Role } from "@/modules/user/dto/user.dto";
-import { ROLES_KEY } from "../../../common/decorators/roles.decorator";
-import { UserService } from "@/modules/user/user.service";
+import { Role } from "@/modules/users/dto/user.dto";
+import { ROLES_KEY } from '@/common/decorators/roles.decorator';
+import { IUserUseCase } from '@modules/users/usecases/i.user.usecase';
 
 @Injectable()
 export class RolesGuard implements CanActivate {
   constructor(
     private readonly reflector: Reflector,
-    private readonly userService: UserService,
+    private readonly userService: IUserUseCase,
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {

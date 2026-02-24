@@ -1,22 +1,21 @@
-import { Body, Controller, Delete, Post, Req } from "@nestjs/common";
+import { Body, Controller, Delete, Get, NotImplementedException, Post, Param } from '@nestjs/common';
 import { AccountService } from "./account.service";
 import { RegisterCompanyDto } from "./dto/register-company.dto";
 import { Public } from "@/common/decorators/roles.decorator";
 import { RegisterStudentDto } from "./dto/register-student.dto";
-import type { Request } from "express";
 import { CurrentUser } from "@/common/decorators/user.decorator";
-import { User } from "../user/models/user";
-
+import { User } from "../users/models/user";
+import { IAccountUseCase } from '@modules/account/usecases/i.account.usecase';
 
 @Controller()
 export class AccountController {
     constructor(
-        private readonly accountService: AccountService,
+        private readonly accountService: IAccountUseCase,
     ){}
     
     @Public()
     @Post("auth/register/company")
-    registerEntreprise(@Body() dto: RegisterCompanyDto) {
+    registerCompany(@Body() dto: RegisterCompanyDto) {
         return this.accountService.registerCompany(dto);
     }
 
@@ -26,8 +25,14 @@ export class AccountController {
         return this.accountService.registerStudent(dto);
     }
 
+    @Public()
+    @Get("users/:userId")
+    getAccount(@Param("userId") userId:string) {
+      throw new NotImplementedException();
+    }
+
     @Delete("users/me")
     deleteAccount(@CurrentUser() user:User) {
-        return "";
+      throw new NotImplementedException();
     }
 }
