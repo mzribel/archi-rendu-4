@@ -3,7 +3,7 @@ import { IApplicationUseCase } from '@modules/applications/usecases/i.applicatio
 import { Roles } from '@/common/decorators/roles.decorator';
 import { CurrentUser } from '@/common/decorators/user.decorator';
 import { User } from '@modules/users/models/user';
-import { Role } from '@modules/users/dto/user.dto';
+import { Role } from '@common/enums/role.enum';
 
 @Controller()
 export class ApplicationController {
@@ -19,7 +19,7 @@ export class ApplicationController {
     return this.applicationService.cancelApplication(user.id.toString(), applicationId);
   }
 
-  @Roles(Role.ETUDIANT, Role.ADMIN)
+  @Roles(Role.STUDENT, Role.ADMIN)
   @Get("/students/:userId/applications")
   getApplicationsByStudentId(@Param("userId") userId:string, @CurrentUser() user:User){
     if (user.role != Role.ADMIN && user.id.toString() != userId) {
@@ -28,7 +28,7 @@ export class ApplicationController {
     return this.applicationService.getApplicationsByStudentId(userId);
   }
 
-  @Roles(Role.ENTREPRISE)
+  @Roles(Role.COMPANY)
   @Get("offers/:offerId/applications")
   getApplicationByOfferId(@Param("offerId") offerId:string, @CurrentUser() user:User){
     return

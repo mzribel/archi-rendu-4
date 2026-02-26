@@ -9,37 +9,105 @@ datasource db {
 }
 
 model Template {
-  id     Int @id @default(autoincrement())
+  id     Int     @id @default(autoincrement())
   name   String
   secret String?
 
-  @@map("templates") 
+  @@map("templates")
 }
 
 model User {
-  id Int @id @default(autoincrement())
-  supabaseUserId String @unique @db.Uuid
-  email String @unique
-  role Role @default(ETUDIANT)
-  createdAt DateTime @default(now())
+  id             Int       @id @default(autoincrement())
+  supabaseUserId String    @unique @db.Uuid
+  email          String    @unique
+  role           Role      @default(STUDENT)
+  isActive       Boolean   @default(true)
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime? @updatedAt
+
+  studentProfile StudentProfile?
   companyProfile CompanyProfile?
 
   @@map("users")
 }
 
-model CompanyProfile {
-  userId     Int   @id @unique
-  legalName  String
-  siret      String?  
-  isVerified Boolean  @default(false)
+model StudentProfile {
+  userId Int  @id @unique
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  @@map("companyProfiles")
+  school       String?
+  degreeName   String?
+  startYear    Int?
+  endYear      Int?
+  currentLevel StudyLevel?
+  targetLevel  StudyLevel?
+  pastDegrees  String[]
+  skills       String[]
+  fieldOfStudy FieldOfStudy?
+  cvUrl        String?
+  isVisible    Boolean       @default(false)
+  showLastName Boolean        @default(false)
+  @@map("student_profiles")
+}
+
+model CompanyProfile {
+  userId      Int       @id @unique
+  legalName   String
+  industry    Industry?
+  description String?   @db.Text
+  siret       String?
+  isVerified  Boolean   @default(false)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("company_profiles")
 }
 
 enum Role {
   ADMIN
-  ETUDIANT
-  ENTREPRISE
-  VERIFICATEUR
+  STUDENT
+  COMPANY
+}
+
+enum Industry {
+  AEROSPACE // Aéronautique
+  AGRICULTURE // Agriculture & Agroalimentaire
+  AUTOMOTIVE // Automobile
+  BANKING_INSURANCE // Banque & Assurance
+  CONSTRUCTION // BTP & Construction
+  EDUCATION // Éducation & Formation
+  ENERGY // Énergie (Nucléaire, Renouvelable)
+  HEALTHCARE // Santé & Pharma
+  HOSPITALITY // Hôtellerie & Restauration
+  IT_SERVICES // ESN & Services Numériques
+  LUXURY // Luxe
+  MANUFACTURING // Industrie & Manufacturier
+  MEDIA_ENTERTAINMENT // Média & Divertissement
+  RETAIL // Commerce & Distribution
+  PUBLIC_SECTOR // Secteur Public
+  TRANSPORT_LOGISTICS // Transport & Logistique
+}
+
+enum FieldOfStudy {
+  ADMINISTRATION // Secrétariat, Administration
+  ARTS_DESIGN // Design, Graphisme, Arts
+  BUSINESS_MANAGEMENT // Management, Stratégie
+  COMMUNICATION // Communication & Événementiel
+  COMPUTER_SCIENCE // Informatique & Développement
+  DATA_ANALYTICS // Data Science & IA
+  ENGINEERING // Ingénierie (Méca, Élec, etc.)
+  FINANCE_ACCOUNTING // Finance & Comptabilité
+  HUMAN_RESOURCES // Ressources Humaines
+  LAW // Droit & Juridique
+  MARKETING // Marketing & Digital
+  SALES // Commerce & Vente
+}
+
+enum StudyLevel {
+  BAC_PLUS_2 // BTS, DUT, DEUST
+  BAC_PLUS_3 // Licence, Bachelor, BUT
+  BAC_PLUS_4 // Master 1
+  BAC_PLUS_5 // Master 2, Diplôme d'Ingénieur, École de Commerce
+  BAC_PLUS_6 // Master Spécialisé
+  DOCTORATE // Doctorat (Bac+8)
 }

@@ -1,4 +1,4 @@
-import { CompanyProfile } from "../models/company-profile";
+import { CompanyEntity, CompanyProfile } from '../models/company-profile';
 import { Injectable } from "@nestjs/common";
 import { PrismaDbContext } from "@/infrastructure/database/prisma/prisma-db-context";
 
@@ -7,7 +7,7 @@ export class PrismaCompanyProfileRepository {
     constructor(private readonly ctx:PrismaDbContext) {}
     
     async createProfile(userId: number, legalName: string, siret?: string) {
-        const data = await this.ctx.db.companyProfile.create({
+        const data:CompanyEntity = await this.ctx.db.companyProfile.create({
             data: {
                 userId,
                 legalName,
@@ -15,9 +15,7 @@ export class PrismaCompanyProfileRepository {
             }
         })
 
-        return new CompanyProfile(
-            data.userId, data.legalName, data.siret ?? "", data.isVerified
-        )
+        return CompanyProfile.fromPersistence(data);
     }
     findById(id: number): Promise<CompanyProfile | null> {
         throw new Error("Method not implemented.");

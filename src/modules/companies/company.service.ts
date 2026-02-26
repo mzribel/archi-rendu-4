@@ -17,7 +17,7 @@ export class CompanyProfileService implements ICompanyUseCase {
     return this.companyProfileRepository.createProfile(userId, legalName, siret);
   }
 
-  createCompanyProfile(userId:string, payload:any) {
+  createCompanyProfile(userId:string, dto:any) {
       throw new NotImplementedException("Method not implemented.")
   }
   getCompanyProfile(userId:string) {

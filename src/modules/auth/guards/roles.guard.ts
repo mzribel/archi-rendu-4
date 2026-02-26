@@ -1,6 +1,6 @@
 import { Injectable, CanActivate, ExecutionContext, ForbiddenException } from "@nestjs/common";
 import { Reflector } from "@nestjs/core";
-import { Role } from "@/modules/users/dto/user.dto";
+import { Role } from "@/common/enums/role.enum";
 import { ROLES_KEY } from '@/common/decorators/roles.decorator';
 import { IUserUseCase } from '@modules/users/usecases/i.user.usecase';
 
@@ -21,20 +21,10 @@ export class RolesGuard implements CanActivate {
     if (!requiredRoles || requiredRoles.length === 0) return true;
 
     const req = context.switchToHttp().getRequest();
-    const supabaseUserId: string | undefined = req.user?.id;
-
-    // Utilisateur non authentifié
-    if (!supabaseUserId) {
-      throw new ForbiddenException('User is not authenticated');
-    }
-
-    const user = await this.userService.getBySupabaseUserId(supabaseUserId);
-    if (!user || !requiredRoles.includes(user.role)) {
+    if (!req.user || !requiredRoles.includes(req.user.role)) {
       throw new ForbiddenException('Insufficient role');
     }
 
-    // Optionnel: rendre le user DB dispo ensuite
-    req.appUser = user;
     return true;
   }
 }

@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { RegisterCompanyDto } from './dto/register-company.dto';
-import { Role } from '@prisma/client';
 import { RegisterStudentDto } from './dto/register-student.dto';
 import { PrismaTransactionRunner } from '@/infrastructure/database/prisma/prisma.transaction-runner';
 import { IAuthUseCase } from '@modules/auth/usecases/i.auth.usecase';
 import { IAccountUseCase } from '@modules/account/usecases/i.account.usecase';
 import { ICompanyUseCase } from '@modules/companies/usecases/i.company.usecase';
 import { IUserUseCase } from '@modules/users/usecases/i.user.usecase';
+import { Role } from '@common/enums/role.enum'
 
 @Injectable()
 export class AccountService implements IAccountUseCase {
@@ -27,7 +27,7 @@ export class AccountService implements IAccountUseCase {
         const user = await this.userService.createUser(
           auth.externalUserId,
           dto.email ?? '',
-          Role.ENTREPRISE,
+          Role.COMPANY,
         );
         await this.companyProfileService.createProfile(
           user.id,

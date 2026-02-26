@@ -25,7 +25,8 @@
       "@/*": ["src/*"],
       "@modules/*": ["src/modules/*"],
       "@config/*": ["src/config/*"],
-      "@infrastructure/*": ["src/infrastructure/*"]
+      "@infrastructure/*": ["src/infrastructure/*"],
+      "@common/*": ["src/common/*"]
     },
     "typeRoots": [
       "./node_modules/@types", "./src/types"

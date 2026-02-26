@@ -92,7 +92,7 @@ export class SupabaseAuth implements ICredentialAuthProvider {
       switch (error.code) {
         case "invalid_credentials":
         case "user_not_found":
-          throw new UnauthorizedException("Email or password incorrect");  
+          throw new UnauthorizedException("Email ou mot de passe incorrect");
         case "over_request_rate_limit":
           throw new HttpException("Rate limit reached", 429)
         default:
@@ -116,7 +116,6 @@ export class SupabaseAuth implements ICredentialAuthProvider {
   }
 
   async deleteUser(authId:string) {
-      console.log("deleting user "+authId);
       const { data, error } = await this.adminClient.auth.admin.deleteUser(authId)
 
       if (error) throw error
