@@ -1,12 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { RegisterCompanyDto } from './dto/register-company.dto';
-import { RegisterStudentDto } from './dto/register-student.dto';
 import { PrismaTransactionRunner } from '@/infrastructure/database/prisma/prisma.transaction-runner';
 import { IAuthUseCase } from '@modules/auth/usecases/i.auth.usecase';
 import { IAccountUseCase } from '@modules/account/usecases/i.account.usecase';
 import { ICompanyUseCase } from '@modules/companies/usecases/i.company.usecase';
 import { IUserUseCase } from '@modules/users/usecases/i.user.usecase';
 import { Role } from '@common/enums/role.enum'
+import { RegisterCompanyDto, RegisterStudentDto } from '@modules/account/dto/register.dto';
 
 @Injectable()
 export class AccountService implements IAccountUseCase {
@@ -18,25 +17,18 @@ export class AccountService implements IAccountUseCase {
   ) {}
 
   async registerCompany(dto: RegisterCompanyDto) {
-    const auth = await this.authService.registerWithPassword(
-      dto.email,
-      dto.password,
-    );
+    // Utilisateur Supabase
+    const auth = await this.authService.registerWithPassword(dto.email, dto.password);
     try {
       return await this.tx.run(async () => {
-        const user = await this.userService.createUser(
-          auth.externalUserId,
-          dto.email ?? '',
-          Role.COMPANY,
-        );
-        await this.companyProfileService.createProfile(
-          user.id,
-          dto.legalName,
-          dto.siret ?? '',
-        );
+        // Utilisateur applicatif
+        const user = await this.userService.createUser(auth.externalUserId, dto.email ?? '', Role.COMPANY,);
+        // Profil de l'utilisateur
+        await this.companyProfileService.createCompanyProfile(user.id, dto.profile);
         return user;
       });
     } catch (e) {
+      // Supprime l'utilisateur Supabase si erreur dans le processus
       await this.authService.deleteUser(auth.externalUserId);
       throw e;
     }
@@ -46,13 +38,13 @@ export class AccountService implements IAccountUseCase {
     throw new Error('Method not implemented.');
   }
 
-  getAccount(userId: string) {
+  getAccount(userId: number) {
     throw new Error('Method not implemented.');
   }
-  updateAccount(userId: string, payload: any) {
+  updateAccount(userId: number, payload: any) {
     throw new Error('Method not implemented.');
   }
-  deleteAccount(userId: string) {
+  deleteAccount(userId: number) {
     throw new Error('Method not implemented.');
   }
 }

@@ -1,8 +1,8 @@
+import { CreateCompanyProfileDto } from '@modules/companies/dto/create-company-profile.dto';
+
 export abstract class ICompanyUseCase {
-  // TODO : Virer celle ci
-  abstract createProfile(userId:number, legalName:string, siret:string)
-  abstract createCompanyProfile(userId:string, payload:any);
-  abstract getCompanyProfile(userId:string);
-  abstract updateCompanyProfile(userId:string, payload:any);
-  abstract requestCompanyVerification(userId:string);
+  abstract createCompanyProfile(userId:number, payload:CreateCompanyProfileDto);
+  abstract getCompanyProfile(userId:number);
+  abstract updateCompanyProfile(userId:number, payload:any);
+  abstract requestCompanyVerification(userId:number);
 }
