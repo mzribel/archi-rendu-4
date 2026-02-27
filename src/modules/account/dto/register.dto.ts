@@ -1,6 +1,6 @@
 import { IsDefined, IsEmail, IsNotEmpty, Validate, ValidateNested } from 'class-validator';
-import { CreateCompanyProfileDto } from '@modules/companies/dto/create-company-profile.dto';
 import { CreateStudentProfileDto } from '@modules/students/dto/create-student-profile.dto';
+import { CreateCompanyProfileDto } from '@/modules/companies/dto/company-profile.dto';
 
 export class RegisterDto {
     @IsEmail()

@@ -1,8 +1,9 @@
-import { Injectable, Inject } from "@nestjs/common";
+import { Injectable, Inject, ImATeapotException } from "@nestjs/common";
 import { UserDto } from "./dto/user.dto";
 import { User } from "./models/user";
 import { PrismaUserRepository } from "./repositories/prisma.user.repository";
 import { Role } from '@common/enums/role.enum';
+import { ExceptionsHandler } from "@nestjs/core/exceptions/exceptions-handler";
 
 @Injectable()
 export class UserService {
@@ -21,6 +22,10 @@ export class UserService {
     }
 
     async getByUserId(userId:number):Promise<User|null> {
-      return this.userRepository.findById(userId);
+      return this.userRepository.findByUserId(userId);
+    }
+
+    async deleteUser(userId:number):Promise<void> {
+      return this.userRepository.deleteUser(userId);
     }
 }

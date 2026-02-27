@@ -1,7 +1,7 @@
 export abstract class IStudentUseCase {
-  abstract getStudentProfile(userId:string);
-  abstract createStudentProfile(userId:string, payload:any);
-  abstract updateStudentProfile(userId:string, payload:any);
-  abstract setProfileVisibility(userId:string, isVisible:boolean);
+  abstract getStudentProfile(userId:number);
+  abstract createStudentProfile(userId:number, payload:any);
+  abstract updateStudentProfile(userId:number, payload:any);
+  abstract setProfileVisibility(userId:number, isVisible:boolean);
   abstract searchStudentProfiles(filters:any);
 }

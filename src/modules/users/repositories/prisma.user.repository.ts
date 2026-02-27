@@ -6,8 +6,12 @@ import { PrismaDbContext } from "@/infrastructure/database/prisma/prisma-db-cont
 export class PrismaUserRepository {
   constructor(private readonly ctx:PrismaDbContext) {}
 
-    findById(id: number): Promise<User | null> {
-        throw new Error("Method not implemented.");
+    async findByUserId(userId: number): Promise<User | null> {
+      const record:UserEntity|null = await this.ctx.db.user.findUnique({
+        where: { id:userId },
+      })
+      if (!record) return null;
+      return User.fromEntity(record);
     }
     async findBySupabaseId(supabaseUserId: string): Promise<User|null> {
         const user:UserEntity|null = await this.ctx.db.user.findUnique({
@@ -29,5 +33,9 @@ export class PrismaUserRepository {
         });
 
         return User.fromEntity(user);
+    }
+
+    async deleteUser(userId:number):Promise<void> {
+        await this.ctx.db.user.delete({where:{id:userId}})
     }
 }

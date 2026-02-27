@@ -6,4 +6,5 @@ export abstract class IUserUseCase {
   abstract createUser(supabaseUserId:string, email:string, role:Role): Promise<UserDto>;
   abstract getBySupabaseUserId(supabaseUserId:string): Promise<User|null>;
   abstract getByUserId(userId:number):Promise<User|null>;
+  abstract deleteUser(userId:number):Promise<void>;
 }

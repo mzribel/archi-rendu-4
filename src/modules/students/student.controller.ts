@@ -6,7 +6,7 @@ export class StudentController {
   constructor(private readonly studentService: IStudentUseCase) {}
 
   @Get("/:userId")
-  getStudentProfile(@Param("userId") userId: string) {
+  getStudentProfile(@Param("userId") userId: number) {
     return this.studentService.getStudentProfile(userId);
   }
 }

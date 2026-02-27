@@ -8,16 +8,16 @@ export class StudentService implements IStudentUseCase {
     private readonly profileRepository: PrismaStudentProfileRepository
   ){}
 
-  getStudentProfile(userId:string){
+  getStudentProfile(userId:number){
     throw new NotImplementedException("Method not implemented.")
   };
-  createStudentProfile(userId:string, payload:any) {
+  createStudentProfile(userId:number, payload:any) {
     throw new Error("Method not implemented.")
   }
-  updateStudentProfile(userId:string, payload:any) {
+  updateStudentProfile(userId:number, payload:any) {
     throw new Error("Method not implemented.")
   }
-  setProfileVisibility(userId:string, isVisible:boolean) {
+  setProfileVisibility(userId:number, isVisible:boolean) {
     throw new Error("Method not implemented.")
   }
   searchStudentProfiles(filters:any) {

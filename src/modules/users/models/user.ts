@@ -30,6 +30,13 @@ export class User {
         }
     }
 
+    isAdmin() {
+      return this.role == Role.ADMIN;
+    }
+    isSelfOrAdmin(userId:number) {
+      return this.id == userId || this.role == Role.ADMIN;
+    }
+
     static fromAuth(supabaseUserId:string, email:string, role:Role):User {
         return new User(
           0,                // Temporaire

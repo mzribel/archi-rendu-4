@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, NotImplementedException, Post, Param } from '@nestjs/common';
+import { Body, Controller, Delete, Get, NotImplementedException, Post, Param, ParseIntPipe } from '@nestjs/common';
 import { Public } from "@/common/decorators/roles.decorator";
 import { CurrentUser } from "@/common/decorators/user.decorator";
 import { User } from "../users/models/user";
@@ -23,8 +23,13 @@ export class AccountController {
         return this.accountService.registerStudent(dto);
     }
 
-    @Delete("users/me")
-    deleteAccount(@CurrentUser() user:User) {
-      throw new NotImplementedException();
+    @Delete("users/:id/account")
+    deleteAccount(@Param('id', ParseIntPipe) userId: number, @CurrentUser() currentUser:User) {
+      return this.accountService.deleteAccount(userId, currentUser);
+    }
+
+    @Get("/users/:id/account")
+    getAccount(@Param('id', ParseIntPipe) userId: number, @CurrentUser() currentUser:User) {
+        return this.accountService.getAccount(userId, currentUser)
     }
 }
