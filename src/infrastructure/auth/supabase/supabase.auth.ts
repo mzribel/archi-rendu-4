@@ -1,8 +1,9 @@
 import { ICredentialAuthProvider } from '@/modules/auth/interfaces/i.credential.auth.provider';
-import { SessionDto } from '@/modules/auth/dto/session.dto';
+import { SessionResponseDto } from '@/modules/auth/dto/session.response.dto';
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import * as process from 'node:process';
 import { BadRequestException, ConflictException, HttpException, UnauthorizedException } from '@nestjs/common';
+import { RegisterDto } from '@/modules/account/dto/register.dto';
 
 export class SupabaseAuth implements ICredentialAuthProvider {
   private readonly client: SupabaseClient;
@@ -51,26 +52,14 @@ export class SupabaseAuth implements ICredentialAuthProvider {
       password: input.password,
     });
 
-    if (error) {
-      switch (error.code) {
-        case "user_already_exists":
-        case "email_exists":
-          throw new ConflictException("User already exists");
-        case "weak_password":
-          throw new BadRequestException("Password is too weak")
-        case "over_request_rate_limit":
-          throw new HttpException("Rate limit reached", 429)
-        default:
-          throw new HttpException("Authentication error", 500)
-      } 
-    }
+    if (error) this.processError(error)
 
     const userId = data.user?.id;
     if (!userId) {
       throw new HttpException("Authentication error", 500)
     }
     
-    const session = data.session ? new SessionDto(
+    const session = data.session ? new SessionResponseDto(
       data.session.access_token, 
       data.session.token_type,
       data.session.expires_in,
@@ -88,24 +77,12 @@ export class SupabaseAuth implements ICredentialAuthProvider {
       password: input.password,
     });
 
-    if (error) {
-      switch (error.code) {
-        case "invalid_credentials":
-        case "user_not_found":
-          throw new UnauthorizedException("Email ou mot de passe incorrect");
-        case "over_request_rate_limit":
-          throw new HttpException("Rate limit reached", 429)
-        default:
-          throw new HttpException("Authentication error", 500)
-      } 
-    }
+    if (error) this.processError(error)
 
     const userId = data.user?.id;
-    if (!userId) {
-      throw new HttpException("Authentication error", 500)
-    }
+    if (!userId || !data.user || !data.session) throw new HttpException("Authentication error", 500)
 
-    const session = new SessionDto(
+    const session = new SessionResponseDto(
       data.session.access_token, 
       data.session.token_type,
       data.session.expires_in,
@@ -118,7 +95,80 @@ export class SupabaseAuth implements ICredentialAuthProvider {
   async deleteUser(authId:string) {
       const { data, error } = await this.adminClient.auth.admin.deleteUser(authId)
 
-      if (error) throw error
+      if (error) this.processError(error);
       return data
+  }
+
+  async requestPasswordReset(email: string) {
+    // Nettoyage de l'email
+
+  const { data, error } = await this.client.auth.resetPasswordForEmail(email, {
+    // URL factice nécessaire, mais non utilisée dans le flux OTP API
+    redirectTo: 'http://localhost:3000/callback', 
+  });
+
+  if (error) throw new Error(error.message);
+  
+  return { message: 'Code de réinitialisation envoyé par email' };
+// // 1. Générer le code 6 chiffres (ton code métier)
+//   const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
+  
+//   // 2. Stocker otpCode + email dans ta DB avec un timestamp
+//   // await this.db.saveOtp(email, otpCode);
+
+//   // 3. Demander à Supabase d'envoyer le mail
+//   const { data, error } = await this.adminClient.auth.admin.generateLink({
+//     type: 'recovery', // Pour réinitialisation
+//     email: email,
+//     // Le contenu du mail est géré par les templates Supabase
+//     // Tu peux passer le code dans les données du template si configuré
+//     options: {
+//       redirectTo: "http://localhost:3000/hehe"
+//     }
+//   });
+
+//   console.log(data)
+
+//   if (error) throw new Error(error.message);
+  
+//   return { message: 'Email envoyé' };
+  }
+
+  async resetPassword(otp: string, dto:RegisterDto) {
+
+  // 1. Vérifier le code OTP reçu par email
+  const { data, error: verifyError } = await this.client.auth.verifyOtp({
+    email:dto.email,
+    token: otp,
+    type: 'recovery', // Indique qu'on vérifie un code de reset
+  });
+
+  if (verifyError) throw new Error(verifyError.message);
+
+  // 2. Mettre à jour le mot de passe
+  const { error: updateError } = await this.client.auth.updateUser({
+    password: dto.password,
+  });
+
+  if (updateError) throw new Error(updateError.message);
+
+  return { message: 'Mot de passe mis à jour avec succès' };
+}
+
+  private processError(error) {
+    if (!error) return;
+    switch (error.code) {
+        case "user_already_exists":
+        case "email_exists":
+          throw new ConflictException("User already exists");
+        case "weak_password":
+          throw new BadRequestException("Password is too weak")
+        case "over_request_rate_limit":
+          throw new HttpException("Rate limit reached", 429)
+        case "validation_failed":
+          throw new BadRequestException("Invalid email format")
+        default:
+          throw new HttpException("Authentication error", 500)
+      }
   }
 }

@@ -7,8 +7,9 @@ import { IUserUseCase } from '@modules/users/usecases/i.user.usecase';
 import { Role } from '@common/enums/role.enum'
 import { RegisterCompanyDto, RegisterDto, RegisterStudentDto } from '@modules/account/dto/register.dto';
 import { User } from "@modules/users/models/user"
-import { AccountDto, CompanyAccountDto, StudentAccountDto } from './dto/account.dto';
+import { AccountResponseDto, CompanyAccountResponseDto, StudentAccountResponseDto } from './dto/account.response.dto';
 import { IStudentUseCase } from '../students/usecases/i.student.usecase';
+import { UserResponseDto } from '../users/dto/user.response.dto';
 
 @Injectable()
 export class AccountService implements IAccountUseCase {
@@ -64,7 +65,7 @@ export class AccountService implements IAccountUseCase {
     }
   }
 
-  async getAccount(userId: number, requestingUser:User):Promise<AccountDto> {
+  async getAccount(userId: number, requestingUser:User):Promise<AccountResponseDto> {
     if (!requestingUser.isSelfOrAdmin(userId))
       throw new ForbiddenException()
 
@@ -72,17 +73,19 @@ export class AccountService implements IAccountUseCase {
     if (!user) 
       throw new NotFoundException();
     
+    const userDto = new UserResponseDto(user);
+
     switch (user.role) {
       case Role.COMPANY: {
         let profile = await this.companyProfileService.getCompanyProfile(user.id);
-        return new CompanyAccountDto(user, profile);
+        return new CompanyAccountResponseDto(userDto, profile);
       }
       case Role.STUDENT: {
         let profile = await this.studentProfileService.getStudentProfile(user.id);
-        return new StudentAccountDto(user, profile);
+        return new StudentAccountResponseDto(userDto, profile);
       }
       default:
-        return new AccountDto(user);
+        return new AccountResponseDto(userDto);
     }
   }
 

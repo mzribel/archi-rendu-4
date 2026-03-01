@@ -1,6 +1,7 @@
-import { Inject, Injectable, NotImplementedException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { IAuthUseCase } from '@modules/auth/usecases/i.auth.usecase';
 import { ICredentialAuthProvider } from '@modules/auth/interfaces/i.credential.auth.provider';
+import { RegisterDto } from '../account/dto/register.dto';
 
 @Injectable()
 export class AuthService implements IAuthUseCase {
@@ -8,8 +9,8 @@ export class AuthService implements IAuthUseCase {
     private readonly credentialAuth: ICredentialAuthProvider,
   ) {}
 
-  requestPasswordReset(email: string) {
-    throw new NotImplementedException('Method not implemented.');
+  async requestPasswordReset(email: string) {
+    return this.credentialAuth.requestPasswordReset(email);
   }
 
   async registerWithPassword(email: string, password: string) {
@@ -22,5 +23,9 @@ export class AuthService implements IAuthUseCase {
 
   async deleteUser(authId: string) {
     return this.credentialAuth.deleteUser(authId);
+  }
+
+  async resetPassword(otp:string, dto:RegisterDto) {
+    
   }
 }

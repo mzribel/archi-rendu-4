@@ -1,4 +1,4 @@
-export class SessionDto {
+export class SessionResponseDto {
     constructor(
         public readonly accessToken:string,
         public readonly tokenType:string,

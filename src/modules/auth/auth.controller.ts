@@ -1,7 +1,8 @@
-import { Body, Controller, Get, NotImplementedException, Post, Query } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Get, NotImplementedException, Post, Query } from '@nestjs/common';
 import { Public } from '@/common/decorators/roles.decorator';
 import { IAuthUseCase } from '@modules/auth/usecases/i.auth.usecase';
 import { LoginDto } from '@modules/auth/dto/login.dto';
+import { RegisterDto } from '../account/dto/register.dto';
 
 @Public()
 @Controller("auth")
@@ -13,8 +14,20 @@ export class AuthController {
     return this.authService.loginWithPassword(dto.email, dto.password)
   }
 
-  @Get("reset_password")
-  reset_password(@Query() email:string) {
-    throw new NotImplementedException();
+  @Get("request-password-reset")
+  requestPasswordRest(@Query("email") email:string) {
+    console.log(email)
+    if (!email) {
+      throw new BadRequestException('Email is required');
+    }
+    return this.authService.requestPasswordReset(email);
+  }
+
+  @Post("reset-password")
+  resetPassword(@Query("otp") otp:string, @Body() dto: RegisterDto) {
+    if (!otp) {
+      throw new BadRequestException('One-time password is required');
+    }
+    return this.authService.resetPassword(otp, dto);
   }
 }

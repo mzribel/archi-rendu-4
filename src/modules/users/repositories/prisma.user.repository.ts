@@ -13,6 +13,7 @@ export class PrismaUserRepository {
       if (!record) return null;
       return User.fromEntity(record);
     }
+    
     async findBySupabaseId(supabaseUserId: string): Promise<User|null> {
         const user:UserEntity|null = await this.ctx.db.user.findUnique({
             where: {supabaseUserId}

@@ -1,4 +1,4 @@
-import { UserDto } from "../dto/user.dto";
+import { UserResponseDto } from "../dto/user.response.dto";
 import { Role } from '@common/enums/role.enum';
 
 export interface UserEntity {
@@ -21,14 +21,6 @@ export class User {
         public readonly createdAt: Date,
         public readonly updatedAt:Date|null,
     ){}
-
-    toDto(): UserDto {
-        return {
-            id:this.id,
-            email:this.email,
-            role:this.role
-        }
-    }
 
     isAdmin() {
       return this.role == Role.ADMIN;

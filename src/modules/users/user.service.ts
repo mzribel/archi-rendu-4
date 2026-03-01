@@ -1,5 +1,5 @@
 import { Injectable, Inject, ImATeapotException } from "@nestjs/common";
-import { UserDto } from "./dto/user.dto";
+import { UserResponseDto } from "./dto/user.response.dto";
 import { User } from "./models/user";
 import { PrismaUserRepository } from "./repositories/prisma.user.repository";
 import { Role } from '@common/enums/role.enum';
@@ -11,10 +11,10 @@ export class UserService {
         private readonly userRepository: PrismaUserRepository
     ){}
 
-    async createUser(supabaseUserId:string, email:string, role:Role): Promise<UserDto> {
+    async createUser(supabaseUserId:string, email:string, role:Role): Promise<UserResponseDto> {
         const userInput = User.fromAuth(supabaseUserId, email, role);
         const userModel = await this.userRepository.create(userInput);
-        return userModel.toDto();
+        return new UserResponseDto(userModel);
     }
 
     async getBySupabaseUserId(supabaseUserId:string): Promise<User|null> {
