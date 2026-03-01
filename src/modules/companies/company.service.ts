@@ -32,8 +32,8 @@ export class CompanyProfileService implements ICompanyUseCase {
     return await this.companyProfileRepository.createProfile(profile);
   }
 
-  async getCompanyProfile(userId:number) {
-    const profile = this.companyProfileRepository.findByUserId(userId);
+  async getCompanyProfile(userId:number):Promise<CompanyProfile> {
+    const profile = await this.companyProfileRepository.findByUserId(userId);
     if (!profile) { throw new NotFoundException()}
     return profile;
   }

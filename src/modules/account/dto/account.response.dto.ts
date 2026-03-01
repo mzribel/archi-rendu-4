@@ -1,6 +1,6 @@
 import { StudentProfile } from "@/modules/students/models/student-profile";
 import { UserResponseDto } from "@/modules/users/dto/user.response.dto";
-import { CompanyProfile } from "@prisma/client";
+import { CompanyProfile } from '@modules/companies/models/company-profile';
 
 export class AccountResponseDto {
     user:UserResponseDto;
@@ -17,10 +17,10 @@ export class StudentAccountResponseDto extends AccountResponseDto {
 }
 
 export class CompanyAccountResponseDto extends AccountResponseDto {
-    profile: CompanyProfile;
+  profile: CompanyProfile;
 
-    constructor(user:UserResponseDto, profile:CompanyProfile) {
-        super(user);
-        this.profile = profile;
-    }
+  constructor(user: UserResponseDto, profile: CompanyProfile) {
+    super(user);
+    this.profile = profile;
+  }
 }

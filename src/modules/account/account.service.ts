@@ -10,6 +10,7 @@ import { User } from "@modules/users/models/user"
 import { AccountResponseDto, CompanyAccountResponseDto, StudentAccountResponseDto } from './dto/account.response.dto';
 import { IStudentUseCase } from '../students/usecases/i.student.usecase';
 import { UserResponseDto } from '../users/dto/user.response.dto';
+import { CompanyProfile } from '@modules/companies/models/company-profile';
 
 @Injectable()
 export class AccountService implements IAccountUseCase {
@@ -78,7 +79,7 @@ export class AccountService implements IAccountUseCase {
 
     switch (user.role) {
       case Role.COMPANY: {
-        let profile = await this.companyProfileService.getCompanyProfile(user.id);
+        let profile:CompanyProfile = await this.companyProfileService.getCompanyProfile(user.id);
         return new CompanyAccountResponseDto(userDto, profile);
       }
       case Role.STUDENT: {
