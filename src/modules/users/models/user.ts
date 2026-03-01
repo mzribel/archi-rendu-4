@@ -1,16 +1,6 @@
 import { UserResponseDto } from "../dto/user.response.dto";
 import { Role } from '@common/enums/role.enum';
 
-export interface UserEntity {
-  id: number;
-  supabaseUserId: string;
-  email: string;
-  role: string; // Prisma renvoie souvent des string pour les enums
-  isActive: boolean;
-  createdAt: Date;
-  updatedAt: Date | null;
-}
-
 export class User {
     constructor(
         public readonly id:number,
@@ -41,7 +31,7 @@ export class User {
         );
     }
 
-    static fromEntity(data:UserEntity): User {
+    static fromObject(data:any): User {
       return new User(
         data.id,
         data.supabaseUserId,

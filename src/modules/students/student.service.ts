@@ -1,6 +1,15 @@
 import { IStudentUseCase } from '@modules/students/usecases/i.student.usecase';
-import { Injectable, NotImplementedException } from '@nestjs/common';
+import {
+  ConflictException,
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+  NotImplementedException,
+} from '@nestjs/common';
 import { PrismaStudentProfileRepository } from '@modules/students/repositories/prisma.student-profile.repository';
+import { CreateStudentProfileDto, UpdateStudentProfileDto } from '@modules/students/dto/student-profile.dto';
+import { StudentProfile } from '@modules/students/models/student-profile';
+import { User } from '@modules/users/models/user';
 
 @Injectable()
 export class StudentService implements IStudentUseCase {
@@ -8,17 +17,37 @@ export class StudentService implements IStudentUseCase {
     private readonly profileRepository: PrismaStudentProfileRepository
   ){}
 
-  getStudentProfile(userId:number){
-    throw new NotImplementedException("Method not implemented.")
+  async getStudentProfile(userId:number){
+    const profile = await this.profileRepository.findByUserId(userId);
+    if (!profile){ throw new NotFoundException() }
+
+    return profile;
   };
-  createStudentProfile(userId:number, payload:any) {
-    throw new Error("Method not implemented.")
+
+  async createStudentProfile(userId:number, dto:CreateStudentProfileDto) {
+    const existing = await this.profileRepository.findByUserId(userId);
+    if (existing){ throw new ConflictException() }
+
+    const profile = StudentProfile.fromDto(userId, dto);
+    return await this.profileRepository.createProfile(profile);
   }
-  updateStudentProfile(userId:number, payload:any) {
-    throw new Error("Method not implemented.")
+
+  async updateStudentProfile(userId:number, dto:UpdateStudentProfileDto, requestingUser:User) {
+    if (!requestingUser.isSelfOrAdmin(userId)) throw new ForbiddenException();
+
+    const existing = this.profileRepository.findByUserId(userId);
+    if (!existing) throw new NotFoundException();
+
+    const updated = StudentProfile.fromUpdateDto(dto);
+    return await this.profileRepository.updateProfile(userId, updated);
   }
-  setProfileVisibility(userId:number, isVisible:boolean) {
-    throw new Error("Method not implemented.")
+  async setProfileVisibility(userId:number, isVisible:boolean, requestingUser:User) {
+    if (!requestingUser.isSelfOrAdmin(userId)) throw new ForbiddenException();
+
+    const existing = this.profileRepository.findByUserId(userId);
+    if (!existing) throw new NotFoundException();
+
+    return await this.profileRepository.updateProfile(userId, { isVisible })
   }
   searchStudentProfiles(filters:any) {
     throw new Error("Method not implemented.")

@@ -25,10 +25,11 @@ export class AccountService implements IAccountUseCase {
   private async createBaseUser(dto: RegisterDto, role:Role) {
     // Utilisateur supabase
     const auth = await this.authService.registerWithPassword(dto.email, dto.password);
-  
+    console.log(auth)
     // Utilisateur applicatif
     try {
       const user = await this.userService.createUser(auth.externalUserId, dto.email ?? '', role);
+      console.log(user)
       return { auth, user };
     } catch (e) {
       await this.authService.deleteUser(auth.externalUserId);
@@ -46,21 +47,21 @@ export class AccountService implements IAccountUseCase {
       });
     } catch (e) {
       await this.authService.deleteUser(auth.externalUserId);
+      await this.userService.deleteUser(user.id);
       throw e;
     }
   }
 
   async registerStudent(dto: RegisterStudentDto) {
     const { auth, user } = await this.createBaseUser(dto, Role.STUDENT);
-    
     try {
       return await this.tx.run(async () => {
-        // 3. Spécifique étudiant
         await this.studentProfileService.createStudentProfile(user.id, dto.profile);
         return user;
       });
     } catch (e) {
       await this.authService.deleteUser(auth.externalUserId);
+      await this.userService.deleteUser(user.id)
       throw e;
     }
   }
@@ -97,9 +98,7 @@ export class AccountService implements IAccountUseCase {
     if (!user) throw new NotFoundException();
 
     return await this.tx.run(async () => {
-      // Utilisateur applicatif (cascade sur le profil)
       await this.userService.deleteUser(userId);
-      // Utilisateur supabase
       await this.authService.deleteUser(user.supabaseUserId)
     });
   }

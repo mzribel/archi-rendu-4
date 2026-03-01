@@ -1,31 +1,34 @@
 import { Injectable } from "@nestjs/common";
-import { User, UserEntity } from '../models/user';
+
 import { PrismaDbContext } from "@/infrastructure/database/prisma/prisma-db-context";
+import { User as PrismaUser } from '@prisma/client';
+import { User } from "@/modules/users/models/user"
 
 @Injectable() 
 export class PrismaUserRepository {
   constructor(private readonly ctx:PrismaDbContext) {}
 
     async findByUserId(userId: number): Promise<User | null> {
-      const record:UserEntity|null = await this.ctx.db.user.findUnique({
+      const record:PrismaUser|null = await this.ctx.db.user.findUnique({
         where: { id:userId },
       })
       if (!record) return null;
-      return User.fromEntity(record);
+      return User.fromObject(record);
     }
     
     async findBySupabaseId(supabaseUserId: string): Promise<User|null> {
-        const user:UserEntity|null = await this.ctx.db.user.findUnique({
+        const user:PrismaUser|null = await this.ctx.db.user.findUnique({
             where: {supabaseUserId}
         })
 
         if (!user) return null;
 
-        return User.fromEntity(user);
+        return User.fromObject(user);
     }
     
     async create(userData: User): Promise<User> {
-        const user:UserEntity = await this.ctx.db.user.create({
+    console.log("?")
+        const user:PrismaUser = await this.ctx.db.user.create({
             data: {
                 supabaseUserId: userData.supabaseUserId, 
                 email: userData.email,
@@ -33,7 +36,7 @@ export class PrismaUserRepository {
             }
         });
 
-        return User.fromEntity(user);
+        return User.fromObject(user);
     }
 
     async deleteUser(userId:number):Promise<void> {

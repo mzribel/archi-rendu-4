@@ -1,8 +1,18 @@
-import { ConflictException, Inject, Injectable, NotImplementedException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  ForbiddenException,
+  Inject,
+  Injectable,
+  NotFoundException,
+  NotImplementedException,
+} from '@nestjs/common';
 import { PrismaCompanyProfileRepository } from "./repositories/prisma.company-profile.repository";
 import { ICompanyUseCase } from '@modules/companies/usecases/i.company.usecase';
-import { CompanyProfile, CreateCompanyInput } from '@modules/companies/models/company-profile';
+import { CompanyProfile } from '@modules/companies/models/company-profile';
 import { CreateCompanyProfileDto, UpdateCompanyProfileDto } from './dto/company-profile.dto';
+import { NotFoundError } from 'rxjs';
+import { User } from '@modules/users/models/user';
 
 @Injectable()
 export class CompanyProfileService implements ICompanyUseCase {
@@ -18,26 +28,32 @@ export class CompanyProfileService implements ICompanyUseCase {
       }
     }
 
-    const input: CreateCompanyInput = {
-      userId,
-      legalName: dto.legalName,
-      industry: dto.industry as any,
-      siret: dto.siret ?? null,
-      description: ""
-    };
-
-    return this.companyProfileRepository.createProfile(input);
+    const profile = CompanyProfile.fromDto(userId, dto);
+    return await this.companyProfileRepository.createProfile(profile);
   }
 
   async getCompanyProfile(userId:number) {
-    return await this.companyProfileRepository.findByUserId(userId);
+    const profile = this.companyProfileRepository.findByUserId(userId);
+    if (!profile) { throw new NotFoundException()}
+    return profile;
   }
+  async updateCompanyProfile(userId: number, dto: Partial<UpdateCompanyProfileDto>, requestingUser:User): Promise<CompanyProfile> {
+    if (!requestingUser.isSelfOrAdmin(userId)) {
+      throw new ForbiddenException()
+    }
 
-  updateCompanyProfile(userId:number, payload:UpdateCompanyProfileDto) {
-    throw new NotImplementedException("Method not implemented.")
-  }
+    // Récupère le profil
+    const existing = await this.companyProfileRepository.findByUserId(userId);
+    if (!existing) throw new NotFoundException("Profil entreprise introuvable.");
 
-  requestCompanyVerification(userId:number) {
-    throw new NotImplementedException("Method not implemented.")
+    // Vérifie le siret
+    if (dto.siret && dto.siret !== existing.siret) {
+      const alreadyExists = await this.companyProfileRepository.existsBySiret(dto.siret);
+      if (alreadyExists) throw new ConflictException("Ce numéro SIRET est déjà utilisé par une autre entreprise.");
+    }
+
+    // Sauvegarde et renvoie
+    const updateData = CompanyProfile.fromUpdateDto(dto);
+    return await this.companyProfileRepository.updateProfile(userId, updateData);
   }
 }

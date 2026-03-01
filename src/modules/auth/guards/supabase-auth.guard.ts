@@ -77,7 +77,7 @@ export class SupabaseAuthGuard implements CanActivate {
 
     const [type, token] = auth.split(" ");
     if (type !== "Bearer") return undefined;
-    if (!token || token === "undefined") return undefined; // si tu reçois littéralement "undefined"
+    if (!token || token === "undefined") return undefined;
     return token;
   }
 

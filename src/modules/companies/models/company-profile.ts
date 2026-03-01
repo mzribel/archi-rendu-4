@@ -1,4 +1,5 @@
 import { Industry } from '@common/enums/industry.enum';
+import { CreateCompanyProfileDto } from '@modules/companies/dto/company-profile.dto';
 
 export class CompanyProfile {
   constructor(
@@ -11,17 +12,34 @@ export class CompanyProfile {
   ) {
   }
 
-  static fromPersistence(record: any): CompanyProfile {
+  static fromObject(data: any): CompanyProfile {
     return new CompanyProfile(
-      record.userId,
-      record.legalName,
-      record.industry as Industry | null,
-      record.description,
-      record.siret,
-      record.isVerified
+      data.userId,
+      data.legalName,
+      data.industry as Industry | null,
+      data.description,
+      data.siret,
+      data.isVerified
     );
   }
+
+  static fromDto(userId:number, dto:CreateCompanyProfileDto) {
+    return new CompanyProfile(
+      userId,
+      dto.legalName,
+      dto.industry ?? null,
+      dto.description ?? null,
+      dto.siret ?? null,
+      false
+    )
+  }
+
+  static fromUpdateDto(dto: Partial<CreateCompanyProfileDto>): Partial<CompanyProfile> {
+    const update: any = {};
+    if (dto.legalName !== undefined) update.legalName = dto.legalName;
+    if (dto.industry !== undefined) update.industry = dto.industry;
+    if (dto.description !== undefined) update.description = dto.description;
+    if (dto.siret !== undefined) update.siret = dto.siret;
+    return update;
+  }
 }
-// Les Types (DTOs du domaine)
-export type CreateCompanyInput = Omit<CompanyProfile, 'isVerified' | 'fromPersistence'>;
-export type UpdateCompanyInput = Partial<Omit<CompanyProfile, 'userId' | 'fromPersistence'>> & { userId: number };

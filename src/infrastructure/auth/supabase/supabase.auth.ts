@@ -99,41 +99,19 @@ export class SupabaseAuth implements ICredentialAuthProvider {
       return data
   }
 
+  // TODO :
   async requestPasswordReset(email: string) {
-    // Nettoyage de l'email
+    const { data, error } = await this.client.auth.resetPasswordForEmail(email, {
+      // URL factice nécessaire, mais non utilisée dans le flux OTP API
+      redirectTo: 'http://localhost:3000/callback',
+    });
 
-  const { data, error } = await this.client.auth.resetPasswordForEmail(email, {
-    // URL factice nécessaire, mais non utilisée dans le flux OTP API
-    redirectTo: 'http://localhost:3000/callback', 
-  });
+    if (error) throw new Error(error.message);
 
-  if (error) throw new Error(error.message);
-  
-  return { message: 'Code de réinitialisation envoyé par email' };
-// // 1. Générer le code 6 chiffres (ton code métier)
-//   const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
-  
-//   // 2. Stocker otpCode + email dans ta DB avec un timestamp
-//   // await this.db.saveOtp(email, otpCode);
-
-//   // 3. Demander à Supabase d'envoyer le mail
-//   const { data, error } = await this.adminClient.auth.admin.generateLink({
-//     type: 'recovery', // Pour réinitialisation
-//     email: email,
-//     // Le contenu du mail est géré par les templates Supabase
-//     // Tu peux passer le code dans les données du template si configuré
-//     options: {
-//       redirectTo: "http://localhost:3000/hehe"
-//     }
-//   });
-
-//   console.log(data)
-
-//   if (error) throw new Error(error.message);
-  
-//   return { message: 'Email envoyé' };
+    return { message: 'Code de réinitialisation envoyé par email' };
   }
 
+  // TODO :
   async resetPassword(otp: string, dto:RegisterDto) {
 
   // 1. Vérifier le code OTP reçu par email
