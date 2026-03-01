@@ -7,15 +7,7 @@ datasource db {
   url       = env("DATABASE_URL")
   directUrl = env("DIRECT_URL")
 }
-
-model Template {
-  id     Int     @id @default(autoincrement())
-  name   String
-  secret String?
-
-  @@map("templates")
-}
-
+²
 model User {
   id             Int       @id @default(autoincrement())
   supabaseUserId String    @unique @db.Uuid
@@ -86,10 +78,9 @@ model Offer {
 
   // Relations
   companyId Int
-  company   CompanyProfile @relation(fields: [companyId], references: [userId])
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  company   CompanyProfile @relation(fields: [companyId], references: [userId], onDelete: Cascade)
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
 
   @@map("offers")
 }

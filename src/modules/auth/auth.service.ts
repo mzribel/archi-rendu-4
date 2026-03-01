@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { IAuthUseCase } from '@modules/auth/usecases/i.auth.usecase';
-import { ICredentialAuthProvider } from '@modules/auth/interfaces/i.credential.auth.provider';
+import { ICredentialAuthProvider } from '@infrastructure/auth/i.credential.auth.provider';
 import { RegisterDto } from '../account/dto/register.dto';
 
 @Injectable()

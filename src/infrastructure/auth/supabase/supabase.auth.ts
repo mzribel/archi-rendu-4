@@ -1,4 +1,4 @@
-import { ICredentialAuthProvider } from '@/modules/auth/interfaces/i.credential.auth.provider';
+import { ICredentialAuthProvider } from '@infrastructure/auth/i.credential.auth.provider';
 import { SessionResponseDto } from '@/modules/auth/dto/session.response.dto';
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import * as process from 'node:process';
