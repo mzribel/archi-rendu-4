@@ -5,9 +5,9 @@ import type { User } from "@/modules/users/models/user";
 type RequestWithUser = Request & {user?:User};
 
 export const CurrentUser = createParamDecorator(
-    (_:unknown, ctx:ExecutionContext): User => {
+    (_:unknown, ctx:ExecutionContext): User | null => {
         const req = ctx.switchToHttp().getRequest<RequestWithUser>();
-        if (!req.user) throw new UnauthorizedException();
+        if (!req.user) return null;
         return req.user;
     }
 )

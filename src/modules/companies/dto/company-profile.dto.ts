@@ -37,7 +37,7 @@ export class UpdateCompanyProfileDto {
 
   @ApiPropertyOptional({
     example: Industry.IT_SERVICES,
-    enum: Industry,
+    enum: Industry,               
     description: 'Company industry sector'
   })  @IsOptional()
   @IsEnum(Industry)

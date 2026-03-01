@@ -64,8 +64,34 @@ model CompanyProfile {
   contactPhoneNumber String?
   contactEmail       String?
   user               User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  offers             Offer[]
 
   @@map("company_profiles")
+}
+
+enum OfferStatus {
+  DRAFT
+  PUBLISHED
+  CLOSED
+}
+
+model Offer {
+  id           Int          @id @default(autoincrement())
+  title        String
+  description  String
+  location     String
+  salary       Int?
+  status       OfferStatus  @default(DRAFT)
+  fieldOfStudy FieldOfStudy // <--- Ajouté selon la règle métier du Rendu 3
+
+  // Relations
+  companyId Int
+  company   CompanyProfile @relation(fields: [companyId], references: [userId])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("offers")
 }
 
 enum Role {

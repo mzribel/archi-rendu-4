@@ -46,29 +46,30 @@ export class SupabaseAuthGuard implements CanActivate {
       context.getHandler(),
       context.getClass(),
     ]);
-    if (isPublic) return true;
 
     const request = context.switchToHttp().getRequest<RequestWithUser>();
-    const supabaseUser = await this.authenticateRequest(request);
+    const supabaseUser:SupabaseUser|null = await this.authenticateRequest(request);
+    let user:User|null = null;
 
-    const user = await this.userService.getBySupabaseUserId(supabaseUser.id);
-
-    if (!user) {
-      throw new UnauthorizedException("User not found in application DB");
+    if (supabaseUser) {
+      user = await this.userService.getBySupabaseUserId(supabaseUser.id);
+      if (!user && !isPublic) {
+        throw new UnauthorizedException("User not found in application DB");
+      }
+      request.user = user ?? undefined;
     }
 
-    request.user = user;
+    if (!isPublic && !user) {
+      throw new UnauthorizedException("Bad token or no token provided");
+    }
+
     return true;
   }
 
-  private async authenticateRequest(request: Request): Promise<SupabaseUser> {
+  private async authenticateRequest(request: Request): Promise<SupabaseUser|null> {
     const token = this.extractTokenFromHeader(request);
-    if (!token) throw new UnauthorizedException("No token provided");
-
-    const user = await this.getUserFromJWT(token);
-    if (!user) throw new UnauthorizedException("Invalid token");
-
-    return user;
+    if (!token) return null;
+    return await this.getUserFromJWT(token) ?? null;
   }
 
   private extractTokenFromHeader(request: Request): string | undefined {

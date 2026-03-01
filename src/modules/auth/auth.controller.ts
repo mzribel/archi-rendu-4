@@ -16,7 +16,6 @@ export class AuthController {
 
   @Get("request-password-reset")
   requestPasswordRest(@Query("email") email:string) {
-    console.log(email)
     if (!email) {
       throw new BadRequestException('Email is required');
     }

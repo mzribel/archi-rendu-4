@@ -1,37 +1,105 @@
-import { Injectable, NotImplementedException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+  NotImplementedException,
+} from '@nestjs/common';
 import { PrismaOfferRepository } from '@modules/offers/repositories/prisma.offer.repository';
 import { IOfferUsecase } from '@modules/offers/usecases/i.offer.usecase';
+import { User } from '@modules/users/models/user';
+import { ICompanyUseCase } from '@modules/companies/usecases/i.company.usecase';
+import request from 'supertest';
+import { CreateOfferDto, UpdateOfferDto } from '@modules/offers/dto/offer.dto';
+import { Offer } from '@modules/offers/models/Offer';
+import { OfferStatus } from '@common/enums/offer-status.enum';
+import { CompanyProfileService } from '@modules/companies/company.service';
+import { CompanyProfile } from '@prisma/client';
 
 @Injectable()
 export class OfferService implements IOfferUsecase {
-  constructor(private readonly offerRepository: PrismaOfferRepository) {}
+  constructor(private readonly offerRepository: PrismaOfferRepository,
+              private readonly companyProfileService: ICompanyUseCase) {}
 
-  getOffersByCompanyId(companyId:string) {
+  getOffersByCompanyId(companyId:number, requestingUser:User) {
     throw new NotImplementedException("Method not implemented.");
   }
 
-  getOfferById(offerId:string){
+  async getVisibleOffersByCompanyId(companyId:number, requestingUser:User|null) {
+    const companyProfile = await this.companyProfileService.getCompanyProfileOrNull(companyId);
+    if (!companyProfile) throw new NotFoundException()
+
+    if (!requestingUser?.isSelfOrAdmin(companyId)) {
+      if (!companyProfile.isVerified) throw new NotFoundException()
+      return this.offerRepository.getOffersByCompanyIdAndStatus(companyId, OfferStatus.PUBLISHED)
+    }
+
+    return this.offerRepository.getOffersByCompanyId(companyId);
+  }
+
+  async getOfferById(offerId:number, requestingUser:User){
+    const offer:Offer|null = await this.offerRepository.getOfferById(offerId);
+    if (!offer) throw new NotFoundException();
+
+    const companyProfile = await this.companyProfileService.getCompanyProfileOrNull(offer.companyId);
+    // Entreprise non-vérifiée ou offre en brouillon
+    if ((companyProfile && !companyProfile.isVerified) || offer.isDraft()) {
+      // Offre seulement visible à soi-même ou aux admins
+      if (!requestingUser || !requestingUser.isSelfOrAdmin(offer.companyId))
+        throw new ForbiddenException();
+    }
+
+    return offer;
+  }
+
+  async createOffer(userId:number, dto:CreateOfferDto, requestingUser:User){
+    const company = await this.companyProfileService.getCompanyProfile(userId);
+
+    if (!requestingUser.isSelfOrAdmin(company.userId)) { throw new ForbiddenException()}
+
+    const offer = Offer.fromDto(userId, dto);
+    return this.offerRepository.createOffer(offer);
+  }
+
+  async updateOffer(offerId:number, dto:UpdateOfferDto, requestingUser:User){
+    const offer = await this.offerRepository.getOfferById(offerId);
+    if (!offer) throw new NotFoundException();
+
+    if (!requestingUser.isSelfOrAdmin(offer.companyId)) throw new ForbiddenException();
+    if (offer.status == OfferStatus.CLOSED) throw new BadRequestException("Impossible to update a closed offer");
+
+    offer.updateFromDto(dto);
+    return await this.offerRepository.updateOffer(offerId, offer);
+  }
+
+
+  searchOffer(filters:any, requestingUser:User){
     throw new NotImplementedException("Method not implemented.");
   }
 
-  createOffer(companyId:string, payload:any){
-    throw new NotImplementedException("Method not implemented.");
+  async publishOffer(offerId:number, requestingUser:User) {
+    const offer = await this.offerRepository.getOfferById(offerId);
+    if (!offer) throw new NotFoundException();
+    if (!requestingUser.isSelfOrAdmin(offer.companyId)) throw new ForbiddenException();
+
+    if (offer.status != OfferStatus.DRAFT && offer.status != OfferStatus.CLOSED) throw new BadRequestException();
+    await this.offerRepository.updateStatus(offerId, OfferStatus.PUBLISHED);
   }
 
-  updateOffer(offerId:string, payload:any){
-    throw new NotImplementedException("Method not implemented.");
+  async closeOffer(offerId:number, requestingUser:User) {
+    const offer = await this.offerRepository.getOfferById(offerId);
+    if (!offer) throw new NotFoundException();
+    if (!requestingUser.isSelfOrAdmin(offer.companyId)) throw new ForbiddenException();
+
+    if (offer.status == OfferStatus.CLOSED) throw new BadRequestException();
+    await this.offerRepository.updateStatus(offerId, OfferStatus.PUBLISHED);
   }
 
-  closeOffer(offerId:string){
-    throw new NotImplementedException("Method not implemented.");
-  }
+  async deleteOffer(offerId:number, requestingUser:User) {
+    const offer = await this.offerRepository.getOfferById(offerId);
+    if (!offer) throw new NotFoundException();
+    if (!requestingUser.isSelfOrAdmin(offer.companyId)) throw new ForbiddenException();
 
-  deleteOffer(offerId:string){
-    throw new NotImplementedException("Method not implemented.");
+    await this.offerRepository.deleteOffer(offerId);
   }
-
-  searchOffer(filters:any){
-    throw new NotImplementedException("Method not implemented.");
-  }
-
 }

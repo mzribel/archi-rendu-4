@@ -27,7 +27,6 @@ export class PrismaUserRepository {
     }
     
     async create(userData: User): Promise<User> {
-    console.log("?")
         const user:PrismaUser = await this.ctx.db.user.create({
             data: {
                 supabaseUserId: userData.supabaseUserId, 

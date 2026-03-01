@@ -26,11 +26,9 @@ export class AccountService implements IAccountUseCase {
   private async createBaseUser(dto: RegisterDto, role:Role) {
     // Utilisateur supabase
     const auth = await this.authService.registerWithPassword(dto.email, dto.password);
-    console.log(auth)
     // Utilisateur applicatif
     try {
       const user = await this.userService.createUser(auth.externalUserId, dto.email ?? '', role);
-      console.log(user)
       return { auth, user };
     } catch (e) {
       await this.authService.deleteUser(auth.externalUserId);

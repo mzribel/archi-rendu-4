@@ -37,6 +37,11 @@ export class CompanyProfileService implements ICompanyUseCase {
     if (!profile) { throw new NotFoundException()}
     return profile;
   }
+
+  async getCompanyProfileOrNull(userId:number):Promise<CompanyProfile|null> {
+    return  this.companyProfileRepository.findByUserId(userId);
+  }
+
   async updateCompanyProfile(userId: number, dto: Partial<UpdateCompanyProfileDto>, requestingUser:User): Promise<CompanyProfile> {
     if (!requestingUser.isSelfOrAdmin(userId)) {
       throw new ForbiddenException()
