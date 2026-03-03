@@ -1,4 +1,3 @@
-// src/modules/offers/dto/create-offer.dto.ts
 import { IsEnum, IsNumber, IsOptional, IsString, Length, Min } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { FieldOfStudy } from '@common/enums/field-of-study.enum';

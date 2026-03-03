@@ -7,7 +7,7 @@ import { SupabaseAuthGuard } from '@modules/auth/guards/supabase-auth.guard';
 import { RolesGuard } from '@modules/auth/guards/roles.guard';
 import { UserModule } from '@modules/users/user.module';
 import { AccountModule } from '@modules/account/account.module';
-import { ApplicationModule } from '@modules/applications/application.module';
+import { OfferApplicationModule } from '@modules/offerApplications/offer-application.module';
 import { CompanyModule } from '@modules/companies/company.module';
 import { OfferModule } from '@modules/offers/offer.module';
 import { StudentModule } from '@modules/students/student.module';
@@ -21,7 +21,7 @@ import { TestModule } from '@modules/route-test/test.module';
     }),
     PrismaModule,
     AccountModule,
-    ApplicationModule,
+    OfferApplicationModule,
     AuthModule,
     CompanyModule,
     OfferModule,

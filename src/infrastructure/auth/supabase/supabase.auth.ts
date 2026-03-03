@@ -1,8 +1,7 @@
 import { ICredentialAuthProvider } from '@infrastructure/auth/i.credential.auth.provider';
 import { SessionResponseDto } from '@/modules/auth/dto/session.response.dto';
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
-import * as process from 'node:process';
-import { BadRequestException, ConflictException, HttpException, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, ConflictException, HttpException } from '@nestjs/common';
 import { RegisterDto } from '@/modules/account/dto/register.dto';
 
 export class SupabaseAuth implements ICredentialAuthProvider {

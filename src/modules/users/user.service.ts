@@ -1,9 +1,8 @@
-import { Injectable, Inject, ImATeapotException } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import { UserResponseDto } from "./dto/user.response.dto";
 import { User } from "./models/user";
 import { PrismaUserRepository } from "./repositories/prisma.user.repository";
 import { Role } from '@common/enums/role.enum';
-import { ExceptionsHandler } from "@nestjs/core/exceptions/exceptions-handler";
 
 @Injectable()
 export class UserService {

@@ -4,7 +4,6 @@ import {
   ForbiddenException,
   Injectable,
   NotFoundException,
-  NotImplementedException,
 } from '@nestjs/common';
 import { PrismaStudentProfileRepository } from '@modules/students/repositories/prisma.student-profile.repository';
 import { CreateStudentProfileDto, UpdateStudentProfileDto } from '@modules/students/dto/student-profile.dto';

@@ -1,4 +1,3 @@
-// src/modules/offers/domain/offer.entity.ts
 import { FieldOfStudy } from '@common/enums/field-of-study.enum';
 import { OfferStatus } from '@prisma/client';
 import { CreateOfferDto, UpdateOfferDto } from '@modules/offers/dto/offer.dto'; // Import de l'enum Prisma
@@ -19,6 +18,9 @@ export class Offer {
 
   public isDraft():boolean {
     return this.status == OfferStatus.DRAFT;
+  }
+  public isApplicable():boolean {
+    return this.status == OfferStatus.PUBLISHED;
   }
 
   public updateFromDto(dto: UpdateOfferDto): void {

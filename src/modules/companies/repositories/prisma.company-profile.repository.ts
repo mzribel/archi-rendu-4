@@ -1,6 +1,6 @@
 import { CompanyProfile } from '../models/company-profile';
 import { CompanyProfile as PrismaCompanyProfile } from '@prisma/client';
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { PrismaDbContext } from "@/infrastructure/database/prisma/prisma-db-context";
 
 @Injectable()

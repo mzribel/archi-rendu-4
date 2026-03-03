@@ -10,6 +10,12 @@ export class OfferController {
   constructor(private readonly offerService: IOfferUsecase) {}
 
   @Public()
+  @Get("/offers")
+  getOffers(@CurrentUser() requestingUser:User) {
+    return this.offerService.getVisibleOffers(requestingUser);
+  }
+
+  @Public()
   @Get("/offers/:offerId")
   getOffer(@Param("offerId") offerId: number, @CurrentUser() currentUser:User|null) {
     return this.offerService.getOfferById(offerId, currentUser);

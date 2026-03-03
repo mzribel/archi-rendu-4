@@ -1,17 +1,13 @@
 import {
-  BadRequestException,
   ConflictException,
   ForbiddenException,
-  Inject,
   Injectable,
   NotFoundException,
-  NotImplementedException,
 } from '@nestjs/common';
 import { PrismaCompanyProfileRepository } from "./repositories/prisma.company-profile.repository";
 import { ICompanyUseCase } from '@modules/companies/usecases/i.company.usecase';
 import { CompanyProfile } from '@modules/companies/models/company-profile';
 import { CreateCompanyProfileDto, UpdateCompanyProfileDto } from './dto/company-profile.dto';
-import { NotFoundError } from 'rxjs';
 import { User } from '@modules/users/models/user';
 
 @Injectable()

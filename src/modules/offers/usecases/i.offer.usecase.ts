@@ -1,4 +1,5 @@
 import { User } from '@modules/users/models/user';
+import { Offer } from '@modules/offers/models/Offer';
 
 export abstract class IOfferUsecase {
   abstract getVisibleOffersByCompanyId(companyId:number, requestingUser:User);
@@ -10,4 +11,9 @@ export abstract class IOfferUsecase {
   abstract deleteOffer(offerId:number, requestingUser:User);
   abstract searchOffer(filters:any, requestingUser:User);
   abstract publishOffer(offerId:number, requestingUser:User);
+
+  abstract getOfferForApplication(offerId:number):Promise<Offer>;
+
+  abstract getVisibleOffers(requestingUser:User):Promise<Offer[]>;
+
 }

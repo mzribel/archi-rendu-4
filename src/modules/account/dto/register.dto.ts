@@ -1,5 +1,5 @@
 import { IsDefined, IsEmail, IsNotEmpty, ValidateNested, IsString, Length, IsOptional, IsEnum, Matches } from 'class-validator';
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 import { CreateCompanyProfileDto } from '@modules/companies/dto/company-profile.dto';
 import { CreateStudentProfileDto } from '@modules/students/dto/student-profile.dto';
 

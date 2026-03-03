@@ -1,4 +1,3 @@
-import { UserResponseDto } from "../dto/user.response.dto";
 import { Role } from '@common/enums/role.enum';
 
 export class User {
@@ -15,6 +14,13 @@ export class User {
     isAdmin() {
       return this.role == Role.ADMIN;
     }
+    isStudent() {
+      return this.role == Role.STUDENT;
+    }
+    isCompany() {
+      return this.role == Role.COMPANY;
+    }
+
     isSelfOrAdmin(userId:number) {
       return this.id == userId || this.role == Role.ADMIN;
     }

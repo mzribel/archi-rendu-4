@@ -59,4 +59,16 @@ export class PrismaOfferRepository {
   async deleteOffer(offerId:number) {
     await this.ctx.db.offer.delete({where:{id:offerId}});
   }
+
+  async getVisibleOffers(): Promise<Offer[]> {
+    const offersData = await this.ctx.db.offer.findMany({
+      where: {
+        company: {
+          isVerified: true // On s'assure que l'entreprise est vérifiée (selon ton schéma)
+        }
+      }
+    });
+
+    return offersData.map(data => Offer.fromObject(data));
+  }
 }

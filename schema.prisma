@@ -43,6 +43,8 @@ model StudentProfile {
   contactPhoneNumber String?
   contactEmail       String?
 
+  applications OfferApplication[]
+
   @@map("student_profiles")
 }
 
@@ -82,7 +84,34 @@ model Offer {
   createdAt DateTime       @default(now())
   updatedAt DateTime       @updatedAt
 
+  applications OfferApplication[]
+
   @@map("offers")
+}
+
+model OfferApplication {
+  id          Int                    @id @default(autoincrement())
+  description String                 @db.Text
+  cvUrl       String
+  status      OfferApplicationStatus @default(SUBMITTED)
+  createdAt   DateTime               @default(now())
+  updatedAt   DateTime?              @updatedAt
+
+  // Clés étrangères et relations
+  studentId Int
+  student   StudentProfile @relation(fields: [studentId], references: [userId], onDelete: Cascade)
+
+  offerId Int
+  offer   Offer @relation(fields: [offerId], references: [id], onDelete: Cascade)
+
+  @@map("offer_applications")
+}
+
+enum OfferApplicationStatus {
+  SUBMITTED
+  REJECTED
+  ACCEPTED
+  CANCELLED
 }
 
 enum Role {

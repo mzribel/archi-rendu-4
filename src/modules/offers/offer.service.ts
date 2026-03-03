@@ -9,12 +9,10 @@ import { PrismaOfferRepository } from '@modules/offers/repositories/prisma.offer
 import { IOfferUsecase } from '@modules/offers/usecases/i.offer.usecase';
 import { User } from '@modules/users/models/user';
 import { ICompanyUseCase } from '@modules/companies/usecases/i.company.usecase';
-import request from 'supertest';
 import { CreateOfferDto, UpdateOfferDto } from '@modules/offers/dto/offer.dto';
 import { Offer } from '@modules/offers/models/Offer';
 import { OfferStatus } from '@common/enums/offer-status.enum';
-import { CompanyProfileService } from '@modules/companies/company.service';
-import { CompanyProfile } from '@prisma/client';
+import { CompanyProfile } from '@modules/companies/models/company-profile';
 
 @Injectable()
 export class OfferService implements IOfferUsecase {
@@ -101,5 +99,23 @@ export class OfferService implements IOfferUsecase {
     if (!requestingUser.isSelfOrAdmin(offer.companyId)) throw new ForbiddenException();
 
     await this.offerRepository.deleteOffer(offerId);
+  }
+
+  async getOfferForApplication(offerId:number):Promise<Offer> {
+    const offer = await this.offerRepository.getOfferById(offerId);
+    if (!offer) throw new BadRequestException("Offer doesn't exist");
+
+    const company:CompanyProfile = await this.companyProfileService.getCompanyProfile(offer.companyId);
+    if (!company || !company.isVerified) throw new NotFoundException();
+
+    console.log(offer)
+    if (!offer.isApplicable())
+      throw new BadRequestException("This offer cannot be applied to.");
+
+    return offer;
+  }
+
+  async getVisibleOffers(requestingUser:User):Promise<Offer[]> {
+    return this.offerRepository.getVisibleOffers();
   }
 }
