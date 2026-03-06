@@ -1,33 +1,71 @@
-# Shibui
+# Shibui - Prototype backend
 
-## Project setup
+## Version déployée
 
-```bash
-$ npm install
+Cette API a été déployée sur Render et est disponible à l'adresse suivante : 
+- URL : https://github.com/mzribel/archi-rendu-4
+- Documentation : https://github.com/mzribel/archi-rendu-4/api/docs
+
+## Prérequis
+
+Avant de lancer le projet, il faut disposer des éléments suivants :
+- Node.js
+- npm
+- une base de données PostgreSQL
+- un projet Supabase configuré pour l’authentification et le stockage
+
+### 1. Cloner le dépôt
+```
+git clone <url-du-repo-backend>
+cd <nom-du-repo-backend>
 ```
 
-## Compile and run the project
-
-```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+### 2. Installer les dépendances
+```
+npm install
 ```
 
-## Run tests
+### 3. Configurer les variables d’environnement
 
-```bash
-# unit tests
-$ npm run test
+Créer un fichier .env à la racine du projet, à partir du fichier `.env.example`.
 
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+### 4. Générer le client Prisma
 ```
+npx prisma generate
+```
+
+Cette commande génère le client Prisma à partir du fichier schema.prisma.
+
+### 5. Appliquer les migrations
+
+Si les migrations sont déjà présentes dans le projet :
+
+```
+npx prisma migrate deploy
+```
+
+En environnement de développement, il est également possible d’utiliser :
+
+```
+npx prisma migrate dev
+```
+
+### 6. Lancer le serveur en développement
+```
+npm run start:dev
+```
+Le backend est alors accessible localement sur le port défini dans le fichier .env.
+
+Par défaut : http://localhost:3000
+
+### 7. Accéder à la documentation de l’API
+
+Une fois le serveur lancé, la documentation de l’API est accessible à l’adresse suivante :
+
+http://localhost:3000/docs/api
+
+La base PostgreSQL doit être accessible avant le lancement du serveur.
+
+Certaines routes nécessitent une authentification valide pour être testées.
+
+Le frontend peut être lancé séparément afin de tester l’application dans un fonctionnement complet client–serveur.
