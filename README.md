@@ -9,7 +9,8 @@ Cette API a été déployée sur Render et est disponible à l'adresse suivante 
 **Attention :** Lors d'une période d'inactivité supérieure à 15min, le serveur Render se met en pause.
 N'importe quel accès à l'API le réveillera, mais cela peut prendre quelques minutes.
 
-Il est fortement conseillé de réveiller le serveur **AVANT** d'utiliser le prototype front-end.
+Il est fortement conseillé de réveiller le serveur **AVANT** d'utiliser le prototype front-end, par exemple en accédant à l'URL de base "/" :
+<img width="717" height="183" alt="image" src="https://github.com/user-attachments/assets/935396f5-6431-4ea3-8879-e1483c872ae5" />
 
 ## Prérequis
 
