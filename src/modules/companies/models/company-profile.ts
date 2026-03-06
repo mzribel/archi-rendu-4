@@ -30,7 +30,7 @@ export class CompanyProfile {
       dto.industry ?? null,
       dto.description ?? null,
       dto.siret ?? null,
-      false
+      true
     )
   }
 
