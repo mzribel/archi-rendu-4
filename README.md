@@ -3,8 +3,13 @@
 ## Version déployée
 
 Cette API a été déployée sur Render et est disponible à l'adresse suivante : 
-- URL : https://github.com/mzribel/archi-rendu-4
-- Documentation : https://github.com/mzribel/archi-rendu-4/api/docs
+- URL : https://archi-rendu-4.onrender.com
+- Documentation : https://archi-rendu-4.onrender.com/api/docs
+
+**Attention :** Lors d'une période d'inactivité supérieure à 15min, le serveur Render se met en pause.
+N'importe quel accès à l'API le réveillera, mais cela peut prendre quelques minutes.
+
+Il est fortement conseillé de réveiller le serveur **AVANT** d'utiliser le prototype front-end.
 
 ## Prérequis
 
